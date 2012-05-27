@@ -7,7 +7,7 @@
 {% block content %}
 <ul>
   <li>Network: {{ host.network }}</li>
-  <li>Monitored: {{ host.monitor}}</li>
+  <li>Monitored: {{ host.monitor }}</li>
 </ul>
 
 <h3>Event log</h3>
@@ -18,13 +18,13 @@
   </tr>
   {% for event in event_list %}
   <tr>
-    <td>{{event.time}}</td>
-    <td>{{event.up|isup}}</td>
+    <td>{{ event.time|date:"d.n.Y H:i" }}</td>
+    <td>{{ event.up|isup }}</td>
   </tr>
   {% endfor %}
 </table>
 
 {% endblock %}
 {% block footer %}
-<a href="{% url 'network-list' %}">Back</p>
+<a href="{% url 'host-list' host.network.slug %}">Back</p>
 {% endblock %}
