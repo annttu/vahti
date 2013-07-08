@@ -29,10 +29,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            net = Network.objects.get(name=options['network'])
+            net = Network.objects.get(slug=options['network'])
         except Network.DoesNotExist, e:
-            self.stderr.write("ERROR %s\n" % e)
-            return
+            try:
+                net = Network.objects.get(name=options['network'])
+            except Network.DoesNotExist, e:
+                print("Network %s not found, try ./manage.py addnetwork <network>")
+                return
         for target in args:
             if ipv6.validate_ip(target) or ipv4.validate_ip(target):
                 self.add_host(target, net)

@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.validators import EMPTY_VALUES
-from iptools import ipv4, ipv6
+from iptools import ipv4, ipv6, IpRange
+from django.core.exceptions import ValidationError
+from django.template.defaultfilters import slugify
 
 class IPAddressField(models.GenericIPAddressField):
     __metaclass__ = models.SubfieldBase
@@ -9,7 +11,6 @@ class IPAddressField(models.GenericIPAddressField):
             return value
         if '.' in value or ':' in value:
             return value
-        print("Serialized %s" % value)
         if value in EMPTY_VALUES:
             return ''
         if value[:4] == 'ipv6':
@@ -25,7 +26,6 @@ class IPAddressField(models.GenericIPAddressField):
         return ''
 
     def value_to_string(self, obj):
-        print("Value to string")
         value = self._get_val_from_obj(obj)
         return self.to_python(value)
 
@@ -35,8 +35,8 @@ class Host(models.Model):
     name = models.CharField(max_length=30, editable=False, null=True)
     last_up = models.DateTimeField(null=True, editable=False)
     up_since = models.DateTimeField(null=True, editable=False)
-    up = models.NullBooleanField(default=None)
-    monitor = models.BooleanField(default=True)
+    up = models.BooleanField(default=False, null=None, blank=None)
+    monitor = models.BooleanField(default=True, null=None, blank=None)
     network = models.ForeignKey('Network')
 
     def __unicode__(self):
@@ -57,7 +57,22 @@ class Host(models.Model):
 
 class Network(models.Model):
     slug = models.SlugField()
-    name = models.CharField(max_length=30, editable=True, unique=True)
+    network = models.CharField(max_length=256, editable=True, unique=True,
+                                                    blank=False, null=False)
+    name = models.CharField(max_length=30, editable=True, unique=True,
+                                                    blank=False, null=False)
+
+    def clean(self):
+        try:
+            IpRange(self.slug)
+        except Exception as e:
+            raise ValidationError("%s is not valid IP-network" % self.slug)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super(Network, self).save(*args, **kwargs)
+
 
     def __unicode__(self):
         return "%s" % (self.name)

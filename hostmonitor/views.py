@@ -19,7 +19,7 @@ class HostListView(ListView):
         slug = self.kwargs.get('slug')
         self.network = get_object_or_404(Network, slug=slug)
         no_unnamed_down = ~Q(up=False, name=None)
-        qs = Host.objects.order_by('-up')
+        qs = Host.objects.order_by('ip')
         qs = qs.filter(no_unnamed_down, network=self.network)
         return qs
 
