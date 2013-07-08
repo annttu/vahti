@@ -11,7 +11,7 @@
     </tr>
     {% for network in object_list %}
       <tr>
-        <td><a href="{% url host-list slug=network.slug %}">{{ network.name }}</a></td>
+        <td><a href="{% url 'host_list' slug=network.slug %}">{{ network.name }}</a></td>
         <td>{{ network.host_set.count }}</td>
       </tr>
     {% endfor %}

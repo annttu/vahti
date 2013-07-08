@@ -6,8 +6,8 @@ from hostmonitor.views import HostDetailView, HostListView
 
 
 urlpatterns = patterns('',
-    url(r'^$', ListView.as_view(model=Network), name='network-list'),
+    url(r'^$', ListView.as_view(model=Network), name='network_list'),
     url(r'^network/(?P<slug>[^/]*)$', HostListView.as_view(),
-        name='host-list'),
-    url(r'^host/(?P<pk>[^/]*)$', HostDetailView.as_view(), name='host-detail'),
+        name='host_list'),
+    url(r'^host/(?P<pk>[^/]*)$', HostDetailView.as_view(), name='host_detail'),
 )

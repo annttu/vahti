@@ -1,5 +1,4 @@
 import socket
-from iptools import validate_ip, validate_cidr, IpRange
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db.utils import IntegrityError

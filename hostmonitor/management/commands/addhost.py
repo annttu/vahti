@@ -3,7 +3,7 @@ from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db.utils import IntegrityError
-from iptools import validate_ip, validate_cidr, IpRange
+from iptools import ipv4, ipv6, IpRange
 
 from hostmonitor.models import Host, Network
 
@@ -34,9 +34,9 @@ class Command(BaseCommand):
             self.stderr.write("ERROR %s\n" % e)
             return
         for target in args:
-            if validate_ip(target):
+            if ipv6.validate_ip(target) or ipv4.validate_ip(target):
                 self.add_host(target, net)
-            elif validate_cidr(target):
+            elif ipv6.validate_cidr(target) or ipv6.validate_cidr(target):
                 hosts = list(IpRange(target))
                 print hosts
                 for host in hosts[1:-1]:

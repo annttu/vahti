@@ -1,4 +1,4 @@
-Django==1.4
-gunicorn==0.14.3
-iptools==0.4.0
-pytz==2012c
+Django==1.5.1
+gunicorn==17.5
+iptools==0.6.1
+pytz==2013b

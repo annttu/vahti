@@ -29,7 +29,7 @@ def dns_lookup(hosts):
     for ip in hosts:
         try:
             names.append(socket.gethostbyaddr(ip)[0])
-        except socket.herror:
+        except (socket.herror, socket.gaierror):
             print ip
             names.append(None)
     return dict(zip(hosts, names))

@@ -3,3 +3,4 @@
 *.sqlite3-journal
 build
 vahti/conf/private.json
+env/
