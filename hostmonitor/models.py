@@ -1,7 +1,37 @@
 from django.db import models
+from django.core.validators import EMPTY_VALUES
+from iptools import ipv4, ipv6
+
+class IPAddressField(models.GenericIPAddressField):
+    __metaclass__ = models.SubfieldBase
+    def to_python(self, value):
+        if isinstance(value, IPAddressField):
+            return value
+        if '.' in value or ':' in value:
+            return value
+        print("Serialized %s" % value)
+        if value in EMPTY_VALUES:
+            return ''
+        if value[:4] == 'ipv6':
+            return ipv6.long2ip(int(value[4:]))
+        else:
+            return ipv4.long2ip(int(value[4:]))
+
+    def get_prep_value(self, value):
+        if ':' in value:
+            return 'ipv6' + str(ipv6.ip2long(value.strip()))
+        elif '.' in value:
+            return 'ipv4' + str(ipv4.ip2long(value.strip()))
+        return ''
+
+    def value_to_string(self, obj):
+        print("Value to string")
+        value = self._get_val_from_obj(obj)
+        return self.to_python(value)
+
 
 class Host(models.Model):
-    ip = models.GenericIPAddressField(unpack_ipv4=True, primary_key=True)
+    ip = IPAddressField(unpack_ipv4=True, primary_key=True)
     name = models.CharField(max_length=30, editable=False, null=True)
     last_up = models.DateTimeField(null=True, editable=False)
     up_since = models.DateTimeField(null=True, editable=False)
